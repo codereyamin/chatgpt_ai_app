@@ -18,7 +18,8 @@ class TextWidget extends StatelessWidget {
       style: TextStyle(
           color: color ?? Colors.white,
           fontSize: fontSize,
-          fontWeight: fontWeight ?? FontWeight.w500),
+          fontWeight: fontWeight ?? FontWeight.w500,
+          overflow: TextOverflow.ellipsis),
     );
   }
 }

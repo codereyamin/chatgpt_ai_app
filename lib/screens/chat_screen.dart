@@ -1,4 +1,5 @@
 import 'package:chatgpt_ai_app/constants/colors.dart';
+import 'package:chatgpt_ai_app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -82,7 +83,9 @@ class _ChartScreenState extends State<ChartScreen> {
                           hintStyle: TextStyle(color: Colors.white)),
                     )),
                     IconButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          await ApiService.getModel();
+                        },
                         icon: const Icon(
                           Icons.send,
                           color: Colors.white,
