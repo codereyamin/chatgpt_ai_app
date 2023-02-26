@@ -2,7 +2,9 @@ import 'package:chatgpt_ai_app/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import '../constants/test_chart.dart';
 import '../services/assets_manager.dart';
+import '../widgets/chart_widget.dart';
 
 class ChartScreen extends StatefulWidget {
   const ChartScreen({super.key});
@@ -44,8 +46,11 @@ class _ChartScreenState extends State<ChartScreen> {
         children: [
           Flexible(
               child: ListView.builder(
-            itemCount: 5,
-            itemBuilder: (context, index) => Text("some text "),
+            itemCount: chartMessages.length,
+            itemBuilder: (context, index) => ChartWidget(
+                msg: chartMessages[index]["msg"].toString(),
+                chartIndex:
+                    int.parse(chartMessages[index]["chartIndex"].toString())),
           )),
           if (isTyping) ...[
             const SpinKitThreeInOut(
