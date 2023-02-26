@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../constants/test_chart.dart';
 import '../services/assets_manager.dart';
 import '../widgets/chart_widget.dart';
+import '../widgets/text_widget.dart';
 
 class ChartScreen extends StatefulWidget {
   const ChartScreen({super.key});
@@ -38,7 +39,27 @@ class _ChartScreenState extends State<ChartScreen> {
         ),
         title: const Text("ChatGPT"),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.more_vert_rounded))
+          IconButton(
+              onPressed: () async {
+                await showModalBottomSheet(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20))),
+                  backgroundColor: scaffoldBackgroundColor,
+                  context: context,
+                  builder: (context) => Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Row(children: [
+                      const Flexible(
+                          child: TextWidget(
+                        label: "chosen Model",
+                        fontSize: 16,
+                      ))
+                    ]),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.more_vert_rounded))
         ],
       ),
       body: SafeArea(
@@ -57,7 +78,7 @@ class _ChartScreenState extends State<ChartScreen> {
               color: Colors.white,
               size: 25,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Material(
@@ -69,15 +90,15 @@ class _ChartScreenState extends State<ChartScreen> {
                     Expanded(
                         child: TextField(
                       controller: textEditingController,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       onSubmitted: (value) {},
-                      decoration: InputDecoration.collapsed(
+                      decoration: const InputDecoration.collapsed(
                           hintText: "How can I help you",
                           hintStyle: TextStyle(color: Colors.white)),
                     )),
                     IconButton(
                         onPressed: () {},
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.send,
                           color: Colors.white,
                         ))
