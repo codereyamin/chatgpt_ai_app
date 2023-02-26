@@ -4,6 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../constants/test_chart.dart';
 import '../services/assets_manager.dart';
+import '../services/services.dart';
 import '../widgets/chart_widget.dart';
 import '../widgets/text_widget.dart';
 
@@ -41,23 +42,7 @@ class _ChartScreenState extends State<ChartScreen> {
         actions: [
           IconButton(
               onPressed: () async {
-                await showModalBottomSheet(
-                  shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20))),
-                  backgroundColor: scaffoldBackgroundColor,
-                  context: context,
-                  builder: (context) => Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Row(children: [
-                      const Flexible(
-                          child: TextWidget(
-                        label: "chosen Model",
-                        fontSize: 16,
-                      ))
-                    ]),
-                  ),
-                );
+                await Services.showBottomSheet(context);
               },
               icon: const Icon(Icons.more_vert_rounded))
         ],
