@@ -30,7 +30,7 @@ class ChartWidget extends StatelessWidget {
                   height: 30,
                   width: 30,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Expanded(

@@ -19,6 +19,7 @@ class ChartScreen extends StatefulWidget {
 }
 
 class _ChartScreenState extends State<ChartScreen> {
+  final appKey = GlobalKey();
   bool isTyping = false;
   late TextEditingController textEditingController;
   late FocusNode focusNode;
@@ -64,14 +65,15 @@ class _ChartScreenState extends State<ChartScreen> {
           child: Column(
         children: [
           Flexible(
+              key: appKey,
               child: ListView.builder(
-            controller: listscrollController,
-            itemCount: chatProvider.chatList.length, //chaetList.length,
-            itemBuilder: (context, index) => ChartWidget(
-                onTap: scrollListToEnd,
-                msg: chatProvider.chatList[index].msg,
-                chartIndex: chatProvider.chatList[index].chartIndex),
-          )),
+                controller: listscrollController,
+                itemCount: chatProvider.chatList.length, //chaetList.length,
+                itemBuilder: (context, index) => ChartWidget(
+                    onTap: scrollListToEnd,
+                    msg: chatProvider.chatList[index].msg,
+                    chartIndex: chatProvider.chatList[index].chartIndex),
+              )),
           if (isTyping) ...[
             const SpinKitThreeInOut(
               color: Colors.white,
@@ -160,6 +162,7 @@ class _ChartScreenState extends State<ChartScreen> {
       });
       await chatProvider.sendMessageAndGetAnswers(
           msg: msg, chosenModelId: modelsProvider.getCurrentModel);
+      Scrollable.ensureVisible(appKey.currentContext!);
 
       setState(() {});
     } catch (err) {
