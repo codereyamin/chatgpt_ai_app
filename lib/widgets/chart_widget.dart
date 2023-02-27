@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:chatgpt_ai_app/constants/colors.dart';
 import 'package:chatgpt_ai_app/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
@@ -31,9 +32,20 @@ class ChartWidget extends StatelessWidget {
                   width: 10,
                 ),
                 Expanded(
-                  child: TextWidget(
-                    label: msg,
-                  ),
+                  child: chartIndex == 0
+                      ? TextWidget(
+                          label: msg,
+                        )
+                      : DefaultTextStyle(
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.w600),
+                          child: AnimatedTextKit(
+                              isRepeatingAnimation: false,
+                              repeatForever: false,
+                              displayFullTextOnTap: true,
+                              totalRepeatCount: 1,
+                              animatedTexts: [TyperAnimatedText(msg.trim())]),
+                        ),
                 ),
                 chartIndex == 0
                     ? const SizedBox.shrink()
