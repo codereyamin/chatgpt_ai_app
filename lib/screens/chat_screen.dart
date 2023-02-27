@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:chatgpt_ai_app/constants/colors.dart';
+import 'package:chatgpt_ai_app/providers/chats_provider.dart';
 import 'package:chatgpt_ai_app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -45,7 +46,8 @@ class _ChartScreenState extends State<ChartScreen> {
   List<ChatModel> chaetList = [];
   @override
   Widget build(BuildContext context) {
-    final modelsProvider = Provider.of<ModelsProvider>(context, listen: false);
+    final modelsProvider = Provider.of<ModelsProvider>(context);
+    final chatProvider = Provider.of<ChatProvider>(context);
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -67,10 +69,10 @@ class _ChartScreenState extends State<ChartScreen> {
           Flexible(
               child: ListView.builder(
             controller: listscrollController,
-            itemCount: chaetList.length,
+            itemCount: chatProvider.chatList.length, //chaetList.length,
             itemBuilder: (context, index) => ChartWidget(
-                msg: chaetList[index].msg,
-                chartIndex: chaetList[index].chartIndex),
+                msg: chatProvider.chatList[index].msg,
+                chartIndex: chatProvider.chatList[index].chartIndex),
           )),
           if (isTyping) ...[
             const SpinKitThreeInOut(
@@ -81,6 +83,9 @@ class _ChartScreenState extends State<ChartScreen> {
               height: 20,
             ),
           ],
+          SizedBox(
+            height: 5,
+          ),
           Material(
             color: cardColor,
             child: Padding(
@@ -93,7 +98,9 @@ class _ChartScreenState extends State<ChartScreen> {
                     controller: textEditingController,
                     style: const TextStyle(color: Colors.white),
                     onSubmitted: (value) async {
-                      await sendMessage(modelsProvider: modelsProvider);
+                      await sendMessage(
+                          modelsProvider: modelsProvider,
+                          chatProvider: chatProvider);
                     },
                     decoration: const InputDecoration.collapsed(
                         hintText: "How can I help you",
@@ -116,7 +123,9 @@ class _ChartScreenState extends State<ChartScreen> {
                         //     isTyping = false;
                         //   });
                         // }
-                        await sendMessage(modelsProvider: modelsProvider);
+                        await sendMessage(
+                            modelsProvider: modelsProvider,
+                            chatProvider: chatProvider);
                       },
                       icon: const Icon(
                         Icons.send,
@@ -134,23 +143,29 @@ class _ChartScreenState extends State<ChartScreen> {
   void scrollListToEnd() {
     listscrollController.animateTo(
       listscrollController.position.maxScrollExtent,
-      duration: const Duration(seconds: 2),
-      curve: Curves.easeOut,
+      duration: const Duration(seconds: 5),
+      curve: Curves.easeInOutExpo,
     );
   }
 
-  Future<void> sendMessage({required ModelsProvider modelsProvider}) async {
+  Future<void> sendMessage(
+      {required ModelsProvider modelsProvider,
+      required ChatProvider chatProvider}) async {
     try {
       setState(() {
         isTyping = true;
-        chaetList
-            .add(ChatModel(msg: textEditingController.text, chartIndex: 0));
+        // chaetList
+        //     .add(ChatModel(msg: textEditingController.text, chartIndex: 0));
+        chatProvider.addUserMessage(msg: textEditingController.text);
         textEditingController.clear();
         focusNode.unfocus();
       });
-      chaetList.addAll(await ApiService.sendMessage(
-          message: textEditingController.text,
-          model: modelsProvider.getCurrentModel));
+      await chatProvider.sendMessageAndGetAnswers(
+          msg: textEditingController.text,
+          chosenModelId: modelsProvider.getCurrentModel);
+      // chaetList.addAll(await ApiService.sendMessage(
+      //     message: textEditingController.text,
+      //     model: modelsProvider.getCurrentModel));
 
       setState(() {});
     } catch (err) {

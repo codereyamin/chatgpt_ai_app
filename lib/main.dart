@@ -1,3 +1,4 @@
+import 'package:chatgpt_ai_app/providers/chats_provider.dart';
 import 'package:chatgpt_ai_app/providers/model_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,9 @@ class MainApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => ModelsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ChatProvider(),
         )
       ],
       child: MaterialApp(
