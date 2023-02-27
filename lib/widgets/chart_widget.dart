@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import '../services/assets_manager.dart';
 
 class ChartWidget extends StatelessWidget {
-  const ChartWidget({super.key, required this.msg, required this.chartIndex});
+  const ChartWidget(
+      {super.key, required this.msg, required this.chartIndex, this.onTap});
 
   final String msg;
   final int chartIndex;
+  final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -44,6 +46,7 @@ class ChartWidget extends StatelessWidget {
                               repeatForever: false,
                               displayFullTextOnTap: true,
                               totalRepeatCount: 1,
+                              onFinished: onTap,
                               animatedTexts: [TyperAnimatedText(msg.trim())]),
                         ),
                 ),

@@ -2,13 +2,9 @@ import 'dart:developer';
 
 import 'package:chatgpt_ai_app/constants/colors.dart';
 import 'package:chatgpt_ai_app/providers/chats_provider.dart';
-import 'package:chatgpt_ai_app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-
-import '../constants/test_chart.dart';
-import '../models/chart_model.dart';
 import '../providers/model_provider.dart';
 import '../services/assets_manager.dart';
 import '../services/services.dart';
@@ -32,6 +28,7 @@ class _ChartScreenState extends State<ChartScreen> {
     textEditingController = TextEditingController();
     focusNode = FocusNode();
     listscrollController = ScrollController();
+
     super.initState();
   }
 
@@ -40,10 +37,10 @@ class _ChartScreenState extends State<ChartScreen> {
     listscrollController.dispose();
     textEditingController.dispose();
     focusNode.dispose();
+
     super.dispose();
   }
 
-  List<ChatModel> chaetList = [];
   @override
   Widget build(BuildContext context) {
     final modelsProvider = Provider.of<ModelsProvider>(context);
@@ -71,21 +68,19 @@ class _ChartScreenState extends State<ChartScreen> {
             controller: listscrollController,
             itemCount: chatProvider.chatList.length, //chaetList.length,
             itemBuilder: (context, index) => ChartWidget(
+                onTap: scrollListToEnd,
                 msg: chatProvider.chatList[index].msg,
                 chartIndex: chatProvider.chatList[index].chartIndex),
           )),
           if (isTyping) ...[
             const SpinKitThreeInOut(
               color: Colors.white,
-              size: 25,
+              size: 30,
             ),
             const SizedBox(
-              height: 20,
+              height: 15,
             ),
           ],
-          SizedBox(
-            height: 5,
-          ),
           Material(
             color: cardColor,
             child: Padding(
@@ -99,8 +94,9 @@ class _ChartScreenState extends State<ChartScreen> {
                     style: const TextStyle(color: Colors.white),
                     onSubmitted: (value) async {
                       await sendMessage(
-                          modelsProvider: modelsProvider,
-                          chatProvider: chatProvider);
+                        modelsProvider: modelsProvider,
+                        chatProvider: chatProvider,
+                      );
                     },
                     decoration: const InputDecoration.collapsed(
                         hintText: "How can I help you",
@@ -108,24 +104,10 @@ class _ChartScreenState extends State<ChartScreen> {
                   )),
                   IconButton(
                       onPressed: () async {
-                        // try {
-                        //   setState(() {
-                        //     isTyping = true;
-                        //   });
-                        //   final lst = await ApiService.sendMessage(
-                        //       message: textEditingController.text,
-                        //       model: modelsProvider.getCurrentModel);
-                        //   textEditingController.text = '';
-                        // } catch (err) {
-                        //   log("err $err");
-                        // } finally {
-                        //   setState(() {
-                        //     isTyping = false;
-                        //   });
-                        // }
                         await sendMessage(
-                            modelsProvider: modelsProvider,
-                            chatProvider: chatProvider);
+                          modelsProvider: modelsProvider,
+                          chatProvider: chatProvider,
+                        );
                       },
                       icon: const Icon(
                         Icons.send,
@@ -143,33 +125,49 @@ class _ChartScreenState extends State<ChartScreen> {
   void scrollListToEnd() {
     listscrollController.animateTo(
       listscrollController.position.maxScrollExtent,
-      duration: const Duration(seconds: 5),
-      curve: Curves.easeInOutExpo,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.fastOutSlowIn,
     );
   }
 
-  Future<void> sendMessage(
-      {required ModelsProvider modelsProvider,
-      required ChatProvider chatProvider}) async {
+  Future<void> sendMessage({
+    required ModelsProvider modelsProvider,
+    required ChatProvider chatProvider,
+  }) async {
+    if (isTyping) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: TextWidget(
+            label: "You can't not send multitiple messages at a time"),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+    if (textEditingController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: TextWidget(label: "Please Type a message"),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
     try {
+      String msg = textEditingController.text;
       setState(() {
         isTyping = true;
-        // chaetList
-        //     .add(ChatModel(msg: textEditingController.text, chartIndex: 0));
-        chatProvider.addUserMessage(msg: textEditingController.text);
+        scrollListToEnd();
+        chatProvider.addUserMessage(msg: msg);
         textEditingController.clear();
         focusNode.unfocus();
       });
       await chatProvider.sendMessageAndGetAnswers(
-          msg: textEditingController.text,
-          chosenModelId: modelsProvider.getCurrentModel);
-      // chaetList.addAll(await ApiService.sendMessage(
-      //     message: textEditingController.text,
-      //     model: modelsProvider.getCurrentModel));
+          msg: msg, chosenModelId: modelsProvider.getCurrentModel);
 
       setState(() {});
     } catch (err) {
       log("err $err");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: TextWidget(label: err.toString()),
+        backgroundColor: Colors.red,
+      ));
     } finally {
       setState(() {
         scrollListToEnd();
