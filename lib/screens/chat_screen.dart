@@ -25,15 +25,18 @@ class _ChartScreenState extends State<ChartScreen> {
   bool isTyping = false;
   late TextEditingController textEditingController;
   late FocusNode focusNode;
+  late ScrollController listscrollController;
   @override
   void initState() {
     textEditingController = TextEditingController();
     focusNode = FocusNode();
+    listscrollController = ScrollController();
     super.initState();
   }
 
   @override
   void dispose() {
+    listscrollController.dispose();
     textEditingController.dispose();
     focusNode.dispose();
     super.dispose();
@@ -63,6 +66,7 @@ class _ChartScreenState extends State<ChartScreen> {
         children: [
           Flexible(
               child: ListView.builder(
+            controller: listscrollController,
             itemCount: chaetList.length,
             itemBuilder: (context, index) => ChartWidget(
                 msg: chaetList[index].msg,
@@ -113,8 +117,6 @@ class _ChartScreenState extends State<ChartScreen> {
                         //   });
                         // }
                         await sendMessage(modelsProvider: modelsProvider);
-                        log(chaetList.toString());
-                        print("object");
                       },
                       icon: const Icon(
                         Icons.send,
@@ -126,6 +128,14 @@ class _ChartScreenState extends State<ChartScreen> {
           )
         ],
       )),
+    );
+  }
+
+  void scrollListToEnd() {
+    listscrollController.animateTo(
+      listscrollController.position.maxScrollExtent,
+      duration: const Duration(seconds: 2),
+      curve: Curves.easeOut,
     );
   }
 
@@ -147,6 +157,7 @@ class _ChartScreenState extends State<ChartScreen> {
       log("err $err");
     } finally {
       setState(() {
+        scrollListToEnd();
         isTyping = false;
       });
     }
