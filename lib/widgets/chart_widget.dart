@@ -50,25 +50,6 @@ class ChartWidget extends StatelessWidget {
                               animatedTexts: [TyperAnimatedText(msg.trim())]),
                         ),
                 ),
-                chartIndex == 0
-                    ? const SizedBox.shrink()
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Icon(
-                            Icons.thumb_up_alt_outlined,
-                            color: Colors.white,
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Icon(
-                            Icons.thumb_down_alt_outlined,
-                            color: Colors.white,
-                          )
-                        ],
-                      )
               ],
             ),
           ),
